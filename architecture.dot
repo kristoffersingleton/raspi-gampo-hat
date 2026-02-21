@@ -1,0 +1,54 @@
+digraph pi_utils {
+    rankdir=TB
+    compound=true
+    node [shape=box, style=rounded, fontname=Helvetica]
+
+    subgraph cluster_app {
+        label="pi_utils/"
+        style=filled; fillcolor="#f0f0f0"
+
+        MON [label="pi_monitor.py\n(Live TUI)"]
+        CHK [label="check_hailo_packages.py\n(Package Auditor)"]
+        FAN [label="fan_overlays.md\n(Fan Reference)"]
+    }
+
+    subgraph cluster_panels {
+        label="pi_monitor panels"
+        style=filled; fillcolor="#ddeeff"
+
+        SYS [label="System Table\nCPU temp/freq/throttle\nvoltage · fan · memory"]
+        HAI [label="Hailo Table\nstatus · arch · firmware · temp"]
+        PCI [label="PCIe Table\ndevices"]
+    }
+
+    subgraph cluster_pkgmgr {
+        label="Package Managers"
+        style=filled; fillcolor="#eeffdd"
+
+        APT [label="apt / dpkg"]
+        PIP [label="pip / pip3"]
+        PIPX [label="pipx"]
+    }
+
+    subgraph cluster_hw {
+        label="Raspberry Pi 5 Hardware"
+        style=filled; fillcolor="#fff0dd"
+
+        SOC [label="SoC · CPU · Fan"]
+        HAILO_HW [label="Hailo AI HAT+\n(PCIe)"]
+    }
+
+    MON -> SYS
+    MON -> HAI
+    MON -> PCI
+
+    SYS -> SOC      [label="vcgencmd\nsysfs"]
+    HAI -> HAILO_HW [label="hailortcli"]
+    PCI -> HAILO_HW [label="lspci"]
+
+    CHK -> APT
+    CHK -> PIP
+    CHK -> PIPX
+
+    FAN -> SOC [label="sysfs / config.txt" style=dashed]
+}
